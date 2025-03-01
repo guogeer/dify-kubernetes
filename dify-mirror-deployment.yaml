@@ -1,6 +1,6 @@
 ###############################################################################
 # Author: Winson Li
-# Email: a623719265@gmail.com
+# Email: mail@winson.dev
 # Github: @Winson-030
 ###############################################################################
 # Namespace
@@ -44,8 +44,8 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   labels:
-    app.kubernetes.io/instance: dify-pg
-  name: dify-pg
+    app.kubernetes.io/instance: dify-postgres
+  name: dify-postgres
   namespace: dify
 
 ---
@@ -53,8 +53,8 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   labels:
-    app.kubernetes.io/instance: dify-pg
-  name: dify-pg
+    app.kubernetes.io/instance: dify-postgres
+  name: dify-postgres
   namespace: dify
 rules:
 - apiGroups:
@@ -69,40 +69,40 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   labels:
-    app.kubernetes.io/instance: dify-pg
-  name: dify-pg
+    app.kubernetes.io/instance: dify-postgres
+  name: dify-postgres
   namespace: dify
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: dify-pg
+  name: dify-postgres
 subjects:
 - kind: ServiceAccount
-  name: dify-pg
+  name: dify-postgres
 
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: dify-pg
+  name: dify-postgres
   namespace: dify
 spec:
   selector:
     matchLabels:
-      app: dify-pg # has to match .spec.template.metadata.labels
-  serviceName: "dify-pg"
+      app: dify-postgres # has to match .spec.template.metadata.labels
+  serviceName: "dify-postgres"
   replicas: 1 # by default is 1
   template:
     metadata:
       labels:
-        app: dify-pg # has to match .spec.selector.matchLabels
+        app: dify-postgres # has to match .spec.selector.matchLabels
     spec:
-      serviceAccountName: dify-pg
+      serviceAccountName: dify-postgres
       terminationGracePeriodSeconds: 10
       nodeSelector:
         kubernetes.io/os: linux
       containers:
-      - name: dify-pg
+      - name: dify-postgres
         image: dhub.kubesre.xyz/postgres:15-alpine
         env:
         - name: PGUSER
@@ -139,12 +139,12 @@ spec:
             memory: 128Mi
         ports:
         - containerPort: 5432
-          name: pg-port
+          name: postgres-port
         volumeMounts:
-        - name: pg-data
+        - name: postgres-data
           mountPath: /var/lib/postgresql/data
       volumes:
-      - name: pg-data
+      - name: postgres-data
         hostPath:
           path: /root/dify/db/postgres/data
           type: DirectoryOrCreate
@@ -153,11 +153,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: dify-pg
+  name: dify-postgres
   namespace: dify
 spec:
   selector:
-    app: dify-pg
+    app: dify-postgres
   type: ClusterIP
   clusterIP: None
   ports:
@@ -381,6 +381,8 @@ spec:
           value: "true"
         - name: "AUTHORIZATION_ADMINLIST_USERS"
           value: "hello@dify.ai"
+        - name: "PERSISTENCE_DATA_PATH"
+          value: "/var/lib/weaviate"
         volumeMounts:
         - name: weaviate-data
           mountPath: /var/lib/weaviate
@@ -454,6 +456,12 @@ spec:
           limits:
             cpu: 500m
             memory: 1Gi
+        livenessProbe:
+          exec:
+            command:
+            - "curl"
+            - "-f"
+            - "http://localhost:8194/health"
         ports:
         - containerPort: 8194
         imagePullPolicy: IfNotPresent
@@ -496,6 +504,7 @@ data:
     acl localnet src fc00::/7       	# RFC 4193 local private network range
     acl localnet src fe80::/10      	# RFC 4291 link-local (directly plugged) machines
     acl SSL_ports port 443
+    # acl SSL_ports port 1025-65535   # Enable the configuration to resolve this issue: https://github.com/langgenius/dify/issues/12792    
     acl Safe_ports port 80		# http
     acl Safe_ports port 21		# ftp
     acl Safe_ports port 443		# https
@@ -703,7 +712,7 @@ spec:
           type: DirectoryOrCreate
       containers:
       - name: dify-api
-        image: dockerhub.icu/langgenius/dify-api:0.15.2
+        image: dockerhub.icu/langgenius/dify-api:1.0.0
         env:
         - name: MODE
           value: api
@@ -828,6 +837,25 @@ spec:
           value: 'http://dify-ssrf:3128'
         - name: SSRF_PROXY_HTTPS_URL
           value: 'http://dify-ssrf:3128'
+        - name: SENTRY_DSN
+          value: ''
+        - name: SENTRY_TRACES_SAMPLE_RATE
+          value: '1.0'
+        - name: SENTRY_PROFILES_SAMPLE_RATE
+          value: '1.0'
+          # plugin settings
+        - name: 'PLUGIN_MAX_PACKAGE_SIZE'
+          value: '52428800'
+        - name: 'INNER_API_KEY_FOR_PLUGIN'
+          value: 'QaHbTe77CtuXmsfyhR7+vRjI/+XbV1AaFy691iy+kGDv2Jvy0/eAh8Y1'
+        - name: 'PLUGIN_DAEMON_KEY'
+          value: 'lYkiYYT6owG+71oLerGzA7GXCgOT++6ovaezWAjpCjf+Sjc3ZtU+qUEi'
+        - name: 'PLUGIN_DAEMON_URL'
+          value: 'http://dify-plugin-daemon:5002'
+        - name: 'MARKETPLACE_ENABLED'
+          value: 'true'
+        - name: 'MARKETPLACE_API_URL'
+          value: 'https://marketplace.dify.ai'
         resources:
           requests:
             cpu: 200m
@@ -837,7 +865,6 @@ spec:
             memory: 2Gi
         ports:
         - containerPort: 5001
-
         imagePullPolicy: IfNotPresent
         volumeMounts:
         - name: dify-api-storage
@@ -880,6 +907,8 @@ spec:
       labels:
         app: dify-worker
     spec:
+      nodeSelector:
+        kubernetes.io/os: linux      
       volumes:
       - name: dify-api-storage
         hostPath:
@@ -887,7 +916,7 @@ spec:
           type: DirectoryOrCreate
       containers:
       - name: dify-worker
-        image: dockerhub.icu/langgenius/dify-api:0.15.2
+        image: dockerhub.icu/langgenius/dify-api:1.0.0
         ports:
         - containerPort: 5001
           protocol: TCP
@@ -982,6 +1011,25 @@ spec:
           value: 'http://dify-ssrf:3128'
         - name: SSRF_PROXY_HTTPS_URL
           value: 'http://dify-ssrf:3128'
+        - name: SENTRY_DSN
+          value: ''
+        - name: SENTRY_TRACES_SAMPLE_RATE
+          value: '1.0'
+        - name: SENTRY_PROFILES_SAMPLE_RATE
+          value: '1.0'
+          # plugin settings
+        - name: 'PLUGIN_MAX_PACKAGE_SIZE'
+          value: '52428800'
+        - name: 'PLUGIN_DAEMON_URL'
+          value: 'http://dify-plugin-daemon:5002'
+        - name: 'PLUGIN_DAEMON_KEY'
+          value: 'lYkiYYT6owG+71oLerGzA7GXCgOT++6ovaezWAjpCjf+Sjc3ZtU+qUEi'
+        - name: 'INNER_API_KEY_FOR_PLUGIN'
+          value: 'QaHbTe77CtuXmsfyhR7+vRjI/+XbV1AaFy691iy+kGDv2Jvy0/eAh8Y1'
+        - name: 'MARKETPLACE_ENABLED'
+          value: 'true'
+        - name: 'MARKETPLACE_API_URL'
+          value: 'https://marketplace.dify.ai'
         resources:
           requests:
             cpu: 200m
@@ -1037,7 +1085,7 @@ spec:
       automountServiceAccountToken: false
       containers:
       - name: dify-web
-        image: dockerhub.icu/langgenius/dify-web:0.15.2
+        image: dockerhub.icu/langgenius/dify-web:1.0.0
         env:
         - name: EDITION
           value: SELF_HOSTED
@@ -1053,6 +1101,17 @@ spec:
           value: "60000"
         - name: CSP_WHITELIST
           value: ""
+          # dify marketplace
+        - name: 'MARKETPLACE_API_URL'
+          value: 'https://marketplace.dify.ai'
+        - name: 'MARKETPLACE_URL'
+          value: 'https://marketplace.dify.ai'
+        - name: 'TOP_K_MAX_VALUE'
+          value: ''
+        - name: 'INDEXING_MAX_SEGMENTATION_TOKENS_LENGTH'
+          value: ''
+        - name: 'PM2_INSTANCES'
+          value: '2'
         resources:
           requests:
             cpu: 100m
@@ -1128,6 +1187,7 @@ data:
           proxy_pass http://dify-api:5001;
           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
           proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_set_header X-Forwarded-Port $server_port;
           proxy_http_version 1.1;
           proxy_set_header Connection "";
           proxy_buffering off;
@@ -1139,6 +1199,7 @@ data:
           proxy_pass http://dify-api:5001;
           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
           proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_set_header X-Forwarded-Port $server_port;
           proxy_http_version 1.1;
           proxy_set_header Connection "";
           proxy_buffering off;
@@ -1150,6 +1211,7 @@ data:
           proxy_pass http://dify-api:5001;
           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
           proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_set_header X-Forwarded-Port $server_port;
           proxy_http_version 1.1;
           proxy_set_header Connection "";
           proxy_buffering off;
@@ -1161,17 +1223,42 @@ data:
           proxy_pass http://dify-api:5001;
           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
           proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_set_header X-Forwarded-Port $server_port;
           proxy_http_version 1.1;
           proxy_set_header Connection "";
           proxy_buffering off;
           proxy_read_timeout 3600s;
           proxy_send_timeout 3600s;
         }
-
+        location /explore {
+          proxy_pass http://dify-web:3000;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_set_header X-Forwarded-Port $server_port;
+          proxy_http_version 1.1;
+          proxy_set_header Connection "";
+          proxy_buffering off;
+          proxy_read_timeout 3600s;
+          proxy_send_timeout 3600s;
+        }
+        
+        location /e/ {
+          proxy_pass http://dify-plugin-deamon:5002;
+          proxy_set_header Dify-Hook-Url ://;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_set_header X-Forwarded-Port $server_port;
+          proxy_http_version 1.1;
+          proxy_set_header Connection "";
+          proxy_buffering off;
+          proxy_read_timeout 3600s;
+          proxy_send_timeout 3600s;
+      }
         location / {
           proxy_pass http://dify-web:3000;
           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
           proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_set_header X-Forwarded-Port $server_port;
           proxy_http_version 1.1;
           proxy_set_header Connection "";
           proxy_buffering off;
@@ -1268,3 +1355,137 @@ spec:
     targetPort: 80
     nodePort: 30000
 # Dify Nginx Server End
+
+# Dify plugin daemon Start
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dify-plugin-daemon
+  namespace: dify
+  labels:
+    app: dify-plugin-daemon
+spec:
+  replicas: 1
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: dify-plugin-daemon
+  template:
+    metadata:
+      labels:
+        app: dify-plugin-daemon
+    spec:
+      nodeSelector:
+        kubernetes.io/os: linux
+      automountServiceAccountToken: false
+      volumes:
+      - name: dify-plugin-daemon-storage
+        hostPath:
+          path: /root/dify/app/plugin/storage
+          type: DirectoryOrCreate
+      containers:
+      - name: dify-plugin-daemon
+        image: dhub.kubesre.xyz/langgenius/dify-plugin-daemon:0.0.3-local
+        resources:
+          limits:
+            memory: "1024Mi"
+            cpu: "2000m"
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 5003
+          protocol: TCP
+          name: debug-port
+          
+        - containerPort: 5002
+          protocol: TCP
+          name: service-port
+        env:
+          - name: DB_USERNAME
+            value: postgres
+
+          - name: DB_PASSWORD
+            value: difyai123456
+
+          - name: DB_HOST
+            value: dify-postgres
+
+          - name: DB_PORT
+            value: '5432'
+
+          - name: REDIS_HOST
+            value: dify-redis
+
+          - name: REDIS_PORT
+            value: '6379'
+
+          - name: REDIS_USERNAME
+            value: ''
+
+          - name: REDIS_PASSWORD
+            value: difyai123456
+          - name: REDIS_USE_SSL
+            value: "false"
+          - name: REDIS_DB
+            value: "0"
+          - name: CELERY_BROKER_URL
+            value: >-
+              redis://$(REDIS_USERNAME):$(REDIS_PASSWORD)@$(REDIS_HOST):$(REDIS_PORT)/1
+          - name: 'DB_DATABASE'
+            value: 'dify_plugin'
+          - name: 'SERVER_PORT'
+            value: '5002'
+          - name: 'EXPOSE_PLUGIN_DAEMON_PORT'
+            value: '5002'
+          - name: 'SERVER_KEY'
+            value: 'lYkiYYT6owG+71oLerGzA7GXCgOT++6ovaezWAjpCjf+Sjc3ZtU+qUEi'
+          - name: 'MAX_PLUGIN_PACKAGE_SIZE'
+            value: '52428800'
+          - name: 'PPROF_ENABLED'
+            value: 'false'
+          - name: 'DIFY_INNER_API_URL'
+            value: 'http://dify-api:5001'
+          - name: 'DIFY_INNER_API_KEY'
+            value: 'QaHbTe77CtuXmsfyhR7+vRjI/+XbV1AaFy691iy+kGDv2Jvy0/eAh8Y1'
+          - name: 'PLUGIN_REMOTE_INSTALLING_HOST'
+            value: '0.0.0.0'
+          - name: 'PLUGIN_REMOTE_INSTALLING_PORT'
+            value: '5003'
+          - name: 'PLUGIN_WORKING_PATH'
+            value: '/app/storage/cwd'
+          - name: 'FORCE_VERIFYING_SIGNATURE'
+            value: 'true'
+          - name: 'EXPOSE_PLUGIN_DEBUGGING_HOST'
+            value: 'localhost'
+          - name: 'EXPOSE_PLUGIN_DEBUGGING_PORT'
+            value: '5003'
+          # - name: 'ENDPOINT_URL_TEMPLATE'
+          #   value: 'http://localhost/e/{hook_id}'
+        volumeMounts:
+        - name: dify-plugin-daemon-storage
+          mountPath: /app/storage
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dify-plugin-daemon
+  namespace: dify
+spec:
+  type: ClusterIP
+  selector:
+    app: dify-plugin-daemon
+  ports:
+  - port: 5003
+    targetPort: 5003
+    protocol: TCP
+    name: debug-port
+  - port: 5002
+    targetPort: 5002
+    protocol: TCP
+    name: service-port
+
+# Dify Plugin Daemon End

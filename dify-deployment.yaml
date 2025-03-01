@@ -882,7 +882,7 @@ spec:
         - name: 'MARKETPLACE_ENABLED'
           value: 'true'
         - name: 'MARKETPLACE_API_URL'
-          value: 'https://marketplace.dify.ai'        
+          value: 'https://marketplace.dify.ai'
         resources:
           requests:
             cpu: 200m
@@ -1067,7 +1067,6 @@ spec:
           value: 'true'
         - name: 'MARKETPLACE_API_URL'
           value: 'https://marketplace.dify.ai'
-        
         resources:
           requests:
             cpu: 200m
