@@ -730,7 +730,7 @@ spec:
           type: DirectoryOrCreate
       containers:
       - name: dify-api
-        image: langgenius/dify-api:0.15.2
+        image: langgenius/dify-api:1.0.0
         env:
         - name: MODE
           value: api
@@ -871,6 +871,12 @@ spec:
           value: '1.0'
         - name: SENTRY_PROFILES_SAMPLE_RATE
           value: '1.0'
+          # plugin settings
+        - name: 'PLUGIN_MAX_PACKAGE_SIZE'
+          value: '52428800'
+        - name: 'INNER_API_KEY_FOR_PLUGIN'
+          value: 'QaHbTe77CtuXmsfyhR7+vRjI/+XbV1AaFy691iy+kGDv2Jvy0/eAh8Y1'
+        
         resources:
           requests:
             cpu: 200m
@@ -931,7 +937,7 @@ spec:
           type: DirectoryOrCreate
       containers:
       - name: dify-worker
-        image: langgenius/dify-api:0.15.2
+        image: langgenius/dify-api:1.0.0
         ports:
         - containerPort: 5001
           protocol: TCP
@@ -1042,6 +1048,11 @@ spec:
           value: '1.0'
         - name: SENTRY_PROFILES_SAMPLE_RATE
           value: '1.0'
+          # plugin settings
+        - name: 'PLUGIN_MAX_PACKAGE_SIZE'
+          value: '52428800'
+        - name: 'INNER_API_KEY_FOR_PLUGIN'
+          value: 'QaHbTe77CtuXmsfyhR7+vRjI/+XbV1AaFy691iy+kGDv2Jvy0/eAh8Y1'
         resources:
           requests:
             cpu: 200m
@@ -1097,7 +1108,7 @@ spec:
       automountServiceAccountToken: false
       containers:
       - name: dify-web
-        image: langgenius/dify-web:0.15.2
+        image: langgenius/dify-web:1.0.0
         env:
         - name: EDITION
           value: SELF_HOSTED
@@ -1113,6 +1124,17 @@ spec:
           value: "60000"
         - name: CSP_WHITELIST
           value: ""
+          # dify marketplace
+        - name: 'MARKETPLACE_API_URL'
+          value: 'https://marketplace.dify.ai'
+        - name: 'MARKETPLACE_URL'
+          value: 'https://marketplace.dify.ai'
+        - name: 'TOP_K_MAX_VALUE'
+          value: ''
+        - name: 'INDEXING_MAX_SEGMENTATION_TOKENS_LENGTH'
+          value: ''
+        - name: 'PM2_INSTANCES'
+          value: '2'
         resources:
           requests:
             cpu: 100m
@@ -1188,6 +1210,7 @@ data:
           proxy_pass http://dify-api:5001;
           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
           proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_set_header X-Forwarded-Port $server_port;
           proxy_http_version 1.1;
           proxy_set_header Connection "";
           proxy_buffering off;
@@ -1199,6 +1222,7 @@ data:
           proxy_pass http://dify-api:5001;
           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
           proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_set_header X-Forwarded-Port $server_port;
           proxy_http_version 1.1;
           proxy_set_header Connection "";
           proxy_buffering off;
@@ -1210,6 +1234,7 @@ data:
           proxy_pass http://dify-api:5001;
           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
           proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_set_header X-Forwarded-Port $server_port;
           proxy_http_version 1.1;
           proxy_set_header Connection "";
           proxy_buffering off;
@@ -1221,17 +1246,44 @@ data:
           proxy_pass http://dify-api:5001;
           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
           proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_set_header X-Forwarded-Port $server_port;
           proxy_http_version 1.1;
           proxy_set_header Connection "";
           proxy_buffering off;
           proxy_read_timeout 3600s;
           proxy_send_timeout 3600s;
         }
+        
+        location /explore {
+          proxy_pass http://dify-api:5001;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_set_header X-Forwarded-Port $server_port;
+          proxy_http_version 1.1;
+          proxy_set_header Connection "";
+          proxy_buffering off;
+          proxy_read_timeout 3600s;
+          proxy_send_timeout 3600s;
+        }
+        
+        location /e/ {
+          proxy_pass http://plugin_daemon:5002;
+          proxy_set_header Dify-Hook-Url $scheme://$host$request_uri;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_set_header X-Forwarded-Port $server_port;
+          proxy_http_version 1.1;
+          proxy_set_header Connection "";
+          proxy_buffering off;
+          proxy_read_timeout 3600s;
+          proxy_send_timeout 3600s;
+      }
 
         location / {
           proxy_pass http://dify-web:3000;
           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
           proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_set_header X-Forwarded-Port $server_port;
           proxy_http_version 1.1;
           proxy_set_header Connection "";
           proxy_buffering off;
