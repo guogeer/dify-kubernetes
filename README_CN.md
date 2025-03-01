@@ -44,6 +44,9 @@ kubectl apply -f dify-deployment.yaml
 
 kubectl apply -f https://raw.githubusercontent.com/Winson-030/dify-kubernetes/main/dify-deployment.yaml
 
+# version 1.0.0 
+kubectl apply -f https://raw.githubusercontent.com/Winson-030/dify-kubernetes/refs/heads/upgrade/dify-version-100/dify-deployment.yaml
+
 ```
 
 如果集群无法直接连接 dockerhub（中国的大多数用户），可以使用下面的镜像源。
@@ -51,6 +54,9 @@ kubectl apply -f https://raw.githubusercontent.com/Winson-030/dify-kubernetes/ma
 ```shell
 
 kubectl apply -f https://cdn.jsdelivr.net/gh/Winson-030/dify-kubernetes@main/dify-mirror-deployment.yaml
+
+# version 1.0.0 
+kubectl apply -f https://cdn.jsdelivr.net/gh/Winson-030/dify-kubernetes@upgrade/dify-version-100/dify-mirror-deployment.yaml
 
 ```
 
