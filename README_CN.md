@@ -33,9 +33,9 @@ ssrf 代理组件已经整合到 `dify-deployment.yaml` 和 `dify-mirror-deploym
 ```shell
 
 git clone https://github.com/Winson-030/dify-kubernetes.git
-
+```
+```
 kubectl apply -f dify-deployment.yaml
-
 ```
 
 ### 一句命令直接部署
@@ -43,21 +43,20 @@ kubectl apply -f dify-deployment.yaml
 ```shell
 
 kubectl apply -f https://raw.githubusercontent.com/Winson-030/dify-kubernetes/main/dify-deployment.yaml
-
-# version 1.0.0 
+```
+## version 1.0.0 
+```
 kubectl apply -f https://raw.githubusercontent.com/Winson-030/dify-kubernetes/refs/heads/upgrade/dify-version-100/dify-deployment.yaml
-
 ```
 
 如果集群无法直接连接 dockerhub（中国的大多数用户），可以使用下面的镜像源。
 
 ```shell
-
 kubectl apply -f https://cdn.jsdelivr.net/gh/Winson-030/dify-kubernetes@main/dify-mirror-deployment.yaml
-
-# version 1.0.0 
+```
+## version 1.0.0 
+```
 kubectl apply -f https://cdn.jsdelivr.net/gh/Winson-030/dify-kubernetes@upgrade/dify-version-100/dify-mirror-deployment.yaml
-
 ```
 
 部署完成后，你可以通过 `http://$(PUBLIC_IP):30000` 访问 dify web 站点，**默认初始化密码** 为 `password`，也可以部署 ingress 进行访问。
@@ -109,6 +108,13 @@ spec:
                 name: dify-nginx
                 port:
                   number: 80
+          - path: /explore
+            pathType: Prefix
+            backend:
+              service:
+                name: dify-nginx
+                port:
+                  number: 80                 
   tls:
     - secretName: dify-tls
 ```
