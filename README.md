@@ -8,6 +8,10 @@ Deploy [Dify](https://dify.ai/) on Kubernetes
 
 > Star 🌟 if this repo helps you ~~
 
+# This is version v1.0.0
+
+This yaml file tested great in my local environment, but I think this need more testing. Please give me a hand, let me know if there is any error occurs. This branch will merge to main a week later. I will create a new branch to keep the version 0.15.3, the branch name is `release/v0.15.3`, checkout to this branch if you need.
+
 
 <p align="center">
   👉<a href="./README.md"><img alt="README in English" src="https://img.shields.io/badge/English-d9d9d9"></a>
