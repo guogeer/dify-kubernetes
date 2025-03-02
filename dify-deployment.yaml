@@ -399,8 +399,7 @@ spec:
           value: "true"
         - name: "AUTHORIZATION_ADMINLIST_USERS"
           value: "hello@dify.ai"
-        - name: "PERSISTENCE_DATA_PATH"
-          value: "/var/lib/weaviate"
+
         volumeMounts:
         - name: weaviate-data
           mountPath: /var/lib/weaviate
