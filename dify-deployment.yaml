@@ -1513,8 +1513,7 @@ spec:
           value: 'localhost'
         - name: 'EXPOSE_PLUGIN_DEBUGGING_PORT'
           value: '5003'
-        - name: 'FORCE_VERIFYING_SIGNATURE'
-          value: 'true'
+
         - name: 'PYTHON_ENV_INIT_TIMEOUT'
           value: '120'
         - name: 'PLUGIN_MAX_EXECUTION_TIMEOUT'

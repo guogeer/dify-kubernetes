@@ -55,7 +55,7 @@ kubectl apply -f dify-deployment.yaml
 ```shell
 kubectl apply -f https://raw.githubusercontent.com/Winson-030/dify-kubernetes/main/dify-deployment.yaml
 ```
-## version 1.0.0 
+## version 1.1.3 
 ```
 kubectl apply -f https://raw.githubusercontent.com/Winson-030/dify-kubernetes/refs/heads/upgrade/dify-version-100/dify-deployment.yaml
 ```
@@ -65,7 +65,7 @@ If cluster is not able to connect dockerhub directly(for most users in China), a
 ```shell
 kubectl apply -f https://cdn.jsdelivr.net/gh/Winson-030/dify-kubernetes@main/dify-mirror-deployment.yaml
 ```
-## version 1.0.0 
+## version 1.1.3 
 ```
 kubectl apply -f https://cdn.jsdelivr.net/gh/Winson-030/dify-kubernetes@upgrade/dify-version-100/dify-mirror-deployment.yaml
 ```
