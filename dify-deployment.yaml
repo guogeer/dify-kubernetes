@@ -7,7 +7,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: dify  
+  name: dify
 
 # Dify Credentials
 # apiVersion: v1
@@ -47,7 +47,6 @@ metadata:
     app.kubernetes.io/instance: dify-postgres
   name: dify-postgres
   namespace: dify
-
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
@@ -63,7 +62,6 @@ rules:
   - "*"
   verbs:
   - "*"
-
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -79,7 +77,6 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: dify-postgres
-
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -89,7 +86,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: dify-postgres 
+      app: dify-postgres
   serviceName: "dify-postgres"
   replicas: 1
   template:
@@ -165,7 +162,6 @@ spec:
         hostPath:
           path: /root/dify/db/postgres/data
           type: DirectoryOrCreate
-
 ---
 apiVersion: v1
 kind: Service
@@ -223,7 +219,6 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: dify-redis
-
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -251,7 +246,7 @@ spec:
         ports:
         - containerPort: 6379
           name: redis-p
-        command: ["redis-server", "--save", "20", "1", "--loglevel", "warning", "--requirepass", "$(REDIS_PASSWORD)"]
+        command: [ "redis-server", "--save", "20", "1", "--loglevel", "warning", "--requirepass", "$(REDIS_PASSWORD)" ]
         resources:
           limits:
             cpu: 500m
@@ -279,7 +274,6 @@ spec:
         hostPath:
           path: /root/dify/db/redis/data
           type: DirectoryOrCreate
-
 ---
 apiVersion: v1
 kind: Service
@@ -308,7 +302,6 @@ metadata:
     app.kubernetes.io/instance: dify-weaviate
   name: dify-weaviate
   namespace: dify
-
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
@@ -324,7 +317,6 @@ rules:
   - "*"
   verbs:
   - "*"
-
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -340,7 +332,6 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: dify-weaviate
-
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -403,7 +394,6 @@ spec:
         volumeMounts:
         - name: weaviate-data
           mountPath: /var/lib/weaviate
-
 ---
 apiVersion: v1
 kind: Service
@@ -424,7 +414,6 @@ spec:
 # Weaviate Server End
 
 # Dify Sandbox Server Start
-
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -449,7 +438,7 @@ spec:
         kubernetes.io/os: linux
       containers:
       - name: dify-sandbox
-        image: langgenius/dify-sandbox:0.2.10
+        image: langgenius/dify-sandbox:0.2.11
         env:
         - name: API_KEY
           value: "dify-sandbox"
@@ -482,7 +471,6 @@ spec:
         ports:
         - containerPort: 8194
         imagePullPolicy: IfNotPresent
-
 ---
 apiVersion: v1
 kind: Service
@@ -551,7 +539,7 @@ data:
     refresh_pattern \/InRelease$ 0 0% 0 refresh-ims
     refresh_pattern \/(Translation-.*)(|\.bz2|\.gz|\.xz)$ 0 0% 0 refresh-ims
     refresh_pattern .		0	20%	4320
-    
+
 
     # upstream proxy, set to your own upstream proxy IP to avoid SSRF attacks
     # cache_peer 172.1.1.1 parent 3128 0 no-query no-digest no-netdb-exchange default 
@@ -565,8 +553,7 @@ data:
     cache_peer dify-sandbox parent 8194 0 no-query originserver
     acl src_all src all
     http_access allow src_all
-
----  
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -577,31 +564,31 @@ data:
     #!/bin/bash
 
     # Modified based on Squid OCI image entrypoint
-    
+
     # This entrypoint aims to forward the squid logs to stdout to assist users of
     # common container related tooling (e.g., kubernetes, docker-compose, etc) to
     # access the service logs.
-    
+
     # Moreover, it invokes the squid binary, leaving all the desired parameters to
     # be provided by the "command" passed to the spawned container. If no command
     # is provided by the user, the default behavior (as per the CMD statement in
     # the Dockerfile) will be to use Ubuntu's default configuration [1] and run
     # squid with the "-NYC" options to mimic the behavior of the Ubuntu provided
     # systemd unit.
-    
+
     # [1] The default configuration is changed in the Dockerfile to allow local
     # network connections. See the Dockerfile for further information.
-    
+
     echo "[ENTRYPOINT] re-create snakeoil self-signed certificate removed in the build process"
     if [ ! -f /etc/ssl/private/ssl-cert-snakeoil.key ]; then
         /usr/sbin/make-ssl-cert generate-default-snakeoil --force-overwrite > /dev/null 2>&1
     fi
-    
+
     tail -F /var/log/squid/access.log 2>/dev/null &
     tail -F /var/log/squid/error.log 2>/dev/null &
     tail -F /var/log/squid/store.log 2>/dev/null &
     tail -F /var/log/squid/cache.log 2>/dev/null &
-    
+
     # Replace environment variables in the template and output to the squid.conf
     echo "[ENTRYPOINT] replacing environment variables in the template"
     awk '{
@@ -612,19 +599,18 @@ data:
         }
         print
     }' /etc/squid/squid.conf.template > /etc/squid/squid.conf
-    
+
     /usr/sbin/squid -Nz
     echo "[ENTRYPOINT] starting squid"
     /usr/sbin/squid -f /etc/squid/squid.conf -NYC 1
-   
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name:  dify-ssrf
+  name: dify-ssrf
   namespace: dify
   labels:
-    app:  dify-ssrf
+    app: dify-ssrf
 spec:
   selector:
     matchLabels:
@@ -638,18 +624,18 @@ spec:
   template:
     metadata:
       labels:
-        app:  dify-ssrf
+        app: dify-ssrf
     spec:
       nodeSelector:
         kubernetes.io/os: linux
       containers:
-      - name:  dify-ssrf
-        image:  ubuntu/squid:latest
+      - name: dify-ssrf
+        image: ubuntu/squid:latest
         env:
         - name: HTTP_PORT
           value: "3128"
         - name: COREDUMP_DIR
-          value: "/var/spool/squid"    
+          value: "/var/spool/squid"
         - name: REVERSE_PROXY_PORT
           value: "8194"
         - name: SANDBOX_HOST
@@ -664,8 +650,8 @@ spec:
             cpu: 300m
             memory: 300Mi
         ports:
-        - containerPort:  3128
-          name:  dify-ssrf
+        - containerPort: 3128
+          name: dify-ssrf
         volumeMounts:
         - name: ssrf-proxy-config
           mountPath: /etc/squid/
@@ -673,14 +659,13 @@ spec:
           mountPath: /tmp/
         command: [ "sh", "-c", "cp /tmp/docker-entrypoint-mount.sh /docker-entrypoint.sh && sed -i 's/\r$$//' /docker-entrypoint.sh && chmod +x /docker-entrypoint.sh && /docker-entrypoint.sh" ]
       volumes:
-        - name: ssrf-proxy-config
-          configMap:
-            name: ssrf-proxy-config
-        - name: ssrf-proxy-entrypoint
-          configMap:
-            name: ssrf-proxy-entrypoint
+      - name: ssrf-proxy-config
+        configMap:
+          name: ssrf-proxy-config
+      - name: ssrf-proxy-entrypoint
+        configMap:
+          name: ssrf-proxy-entrypoint
       restartPolicy: Always
-
 ---
 apiVersion: v1
 kind: Service
@@ -694,6 +679,7 @@ spec:
   - protocol: TCP
     port: 3128
     targetPort: 3128
+
 # Dify SSRF Proxy End
 
 # Dify API Server End
@@ -728,7 +714,7 @@ spec:
           type: DirectoryOrCreate
       containers:
       - name: dify-api
-        image: langgenius/dify-api:1.0.0
+        image: langgenius/dify-api:1.1.3
         env:
         - name: MODE
           value: api
@@ -882,6 +868,17 @@ spec:
           value: 'true'
         - name: 'MARKETPLACE_API_URL'
           value: 'https://marketplace.dify.ai'
+        - name: 'PLUGIN_REMOTE_INSTALL_HOST'
+          value: 'dify-plugin-daemon'
+        - name: 'PLUGIN_REMOTE_INSTALL_PORT'
+          value: '5003'
+        - name: 'FORCE_VERIFYING_SIGNATURE'
+          value: 'true'
+        - name: 'PLUGIN_PYTHON_ENV_INIT_TIMEOUT'
+          value: '120'
+        - name: 'PLUGIN_MAX_EXECUTION_TIMEOUT'
+          value: '600'
+        - name: 'PIP_MIRROR_URL'
         resources:
           requests:
             cpu: 200m
@@ -942,7 +939,7 @@ spec:
           type: DirectoryOrCreate
       containers:
       - name: dify-worker
-        image: langgenius/dify-api:1.0.0
+        image: langgenius/dify-api:1.1.3
         ports:
         - containerPort: 5001
           protocol: TCP
@@ -1066,6 +1063,17 @@ spec:
           value: 'true'
         - name: 'MARKETPLACE_API_URL'
           value: 'https://marketplace.dify.ai'
+        - name: 'PLUGIN_REMOTE_INSTALL_HOST'
+          value: 'dify-plugin-daemon'
+        - name: 'PLUGIN_REMOTE_INSTALL_PORT'
+          value: '5003'
+        - name: 'FORCE_VERIFYING_SIGNATURE'
+          value: 'true'
+        - name: 'PLUGIN_PYTHON_ENV_INIT_TIMEOUT'
+          value: '120'
+        - name: 'PLUGIN_MAX_EXECUTION_TIMEOUT'
+          value: '600'
+        - name: 'PIP_MIRROR_URL'
         resources:
           requests:
             cpu: 200m
@@ -1078,7 +1086,6 @@ spec:
           mountPath: /app/api/storage
         imagePullPolicy: IfNotPresent
       restartPolicy: Always
-
 ---
 apiVersion: v1
 kind: Service
@@ -1121,7 +1128,7 @@ spec:
       automountServiceAccountToken: false
       containers:
       - name: dify-web
-        image: langgenius/dify-web:1.0.0
+        image: langgenius/dify-web:1.1.3
         env:
         - name: EDITION
           value: SELF_HOSTED
@@ -1148,6 +1155,14 @@ spec:
           value: ''
         - name: 'PM2_INSTANCES'
           value: '2'
+        - name: 'LOOP_NODE_MAX_COUNT'
+          value: '100'
+        - name: 'MAX_TOOLS_NUM'
+          value: '10'
+        - name: 'MAX_PARALLEL_LIMIT'
+          value: '10'
+        - name: 'MAX_ITERATIONS_NUM'
+          value: '5'
         resources:
           requests:
             cpu: 100m
@@ -1158,7 +1173,6 @@ spec:
         ports:
         - containerPort: 3000
         imagePullPolicy: IfNotPresent
-
 ---
 apiVersion: v1
 kind: Service
@@ -1376,7 +1390,6 @@ spec:
   - name: dify-nginx
     port: 80
     targetPort: 80
-
 ---
 kind: Service
 apiVersion: v1
@@ -1392,10 +1405,10 @@ spec:
     port: 80
     targetPort: 80
     nodePort: 30000
+
 # Dify Nginx Server End
 
 # Dify plugin daemon Start
-
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -1425,7 +1438,7 @@ spec:
           type: DirectoryOrCreate
       containers:
       - name: dify-plugin-daemon
-        image: langgenius/dify-plugin-daemon:0.0.3-local
+        image: langgenius/dify-plugin-daemon:0.0.6-local
         resources:
           limits:
             memory: "1024Mi"
@@ -1437,75 +1450,81 @@ spec:
         - containerPort: 5003
           protocol: TCP
           name: debug-port
-          
+
         - containerPort: 5002
           protocol: TCP
           name: service-port
         env:
-          - name: DB_USERNAME
-            value: postgres
+        - name: DB_USERNAME
+          value: postgres
 
-          - name: DB_PASSWORD
-            value: difyai123456
+        - name: DB_PASSWORD
+          value: difyai123456
 
-          - name: DB_HOST
-            value: dify-postgres
+        - name: DB_HOST
+          value: dify-postgres
 
-          - name: DB_PORT
-            value: '5432'
+        - name: DB_PORT
+          value: '5432'
 
-          - name: REDIS_HOST
-            value: dify-redis
+        - name: REDIS_HOST
+          value: dify-redis
 
-          - name: REDIS_PORT
-            value: '6379'
+        - name: REDIS_PORT
+          value: '6379'
 
-          - name: REDIS_USERNAME
-            value: ''
+        - name: REDIS_USERNAME
+          value: ''
 
-          - name: REDIS_PASSWORD
-            value: difyai123456
-          - name: REDIS_USE_SSL
-            value: "false"
-          - name: REDIS_DB
-            value: "0"
-          - name: CELERY_BROKER_URL
-            value: >-
-              redis://$(REDIS_USERNAME):$(REDIS_PASSWORD)@$(REDIS_HOST):$(REDIS_PORT)/1
-          - name: 'DB_DATABASE'
-            value: 'dify_plugin'
-          - name: 'SERVER_PORT'
-            value: '5002'
-          - name: 'EXPOSE_PLUGIN_DAEMON_PORT'
-            value: '5002'
-          - name: 'SERVER_KEY'
-            value: 'lYkiYYT6owG+71oLerGzA7GXCgOT++6ovaezWAjpCjf+Sjc3ZtU+qUEi'
-          - name: 'MAX_PLUGIN_PACKAGE_SIZE'
-            value: '52428800'
-          - name: 'PPROF_ENABLED'
-            value: 'false'
-          - name: 'DIFY_INNER_API_URL'
-            value: 'http://dify-api:5001'
-          - name: 'DIFY_INNER_API_KEY'
-            value: 'QaHbTe77CtuXmsfyhR7+vRjI/+XbV1AaFy691iy+kGDv2Jvy0/eAh8Y1'
-          - name: 'PLUGIN_REMOTE_INSTALLING_HOST'
-            value: '0.0.0.0'
-          - name: 'PLUGIN_REMOTE_INSTALLING_PORT'
-            value: '5003'
-          - name: 'PLUGIN_WORKING_PATH'
-            value: '/app/storage/cwd'
-          - name: 'FORCE_VERIFYING_SIGNATURE'
-            value: 'true'
-          - name: 'EXPOSE_PLUGIN_DEBUGGING_HOST'
-            value: 'localhost'
-          - name: 'EXPOSE_PLUGIN_DEBUGGING_PORT'
-            value: '5003'
-          # - name: 'ENDPOINT_URL_TEMPLATE'
-          #   value: 'http://localhost/e/{hook_id}'
+        - name: REDIS_PASSWORD
+          value: difyai123456
+        - name: REDIS_USE_SSL
+          value: "false"
+        - name: REDIS_DB
+          value: "0"
+        - name: CELERY_BROKER_URL
+          value: >-
+            redis://$(REDIS_USERNAME):$(REDIS_PASSWORD)@$(REDIS_HOST):$(REDIS_PORT)/1
+        - name: 'DB_DATABASE'
+          value: 'dify_plugin'
+        - name: 'SERVER_PORT'
+          value: '5002'
+        - name: 'EXPOSE_PLUGIN_DAEMON_PORT'
+          value: '5002'
+        - name: 'SERVER_KEY'
+          value: 'lYkiYYT6owG+71oLerGzA7GXCgOT++6ovaezWAjpCjf+Sjc3ZtU+qUEi'
+        - name: 'MAX_PLUGIN_PACKAGE_SIZE'
+          value: '52428800'
+        - name: 'PPROF_ENABLED'
+          value: 'false'
+        - name: 'DIFY_INNER_API_URL'
+          value: 'http://dify-api:5001'
+        - name: 'DIFY_INNER_API_KEY'
+          value: 'QaHbTe77CtuXmsfyhR7+vRjI/+XbV1AaFy691iy+kGDv2Jvy0/eAh8Y1'
+        - name: 'PLUGIN_REMOTE_INSTALLING_HOST'
+          value: '0.0.0.0'
+        - name: 'PLUGIN_REMOTE_INSTALLING_PORT'
+          value: '5003'
+        - name: 'PLUGIN_WORKING_PATH'
+          value: '/app/storage/cwd'
+        - name: 'FORCE_VERIFYING_SIGNATURE'
+          value: 'true'
+        - name: 'EXPOSE_PLUGIN_DEBUGGING_HOST'
+          value: 'localhost'
+        - name: 'EXPOSE_PLUGIN_DEBUGGING_PORT'
+          value: '5003'
+        - name: 'FORCE_VERIFYING_SIGNATURE'
+          value: 'true'
+        - name: 'PYTHON_ENV_INIT_TIMEOUT'
+          value: '120'
+        - name: 'PLUGIN_MAX_EXECUTION_TIMEOUT'
+          value: '600'
+        - name: 'PIP_MIRROR_URL'
+        # - name: 'ENDPOINT_URL_TEMPLATE'
+        #   value: 'http://localhost/e/{hook_id}'
         volumeMounts:
         - name: dify-plugin-daemon-storage
           mountPath: /app/storage
-
 ---
 apiVersion: v1
 kind: Service
