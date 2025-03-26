@@ -8,7 +8,7 @@ Deploy [Dify](https://dify.ai/) on Kubernetes
 
 > Star 🌟 if this repo helps you ~~
 
-# This is version v1.0.0
+# This is version v1.1.3
 
 **This branch will merge to main when dify 1.0 tested stable, now it's not.**
 
