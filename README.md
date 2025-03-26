@@ -10,7 +10,9 @@ Deploy [Dify](https://dify.ai/) on Kubernetes
 
 # This is version v1.0.0
 
-This yaml file tested great in my local environment, but I think this need more testing. Please give me a hand, let me know if there is any error occurs. This branch will merge to main a week later. I will create a new branch to keep the version 0.15.3, the branch name is `release/v0.15.3`, checkout to this branch if you need.
+**This branch will merge to main when dify 1.0 tested stable, now it's not.**
+
+This yaml file tested great in my local environment, but I think this need more testing. Please give me a hand, let me know if there is any error occurs. ~~This branch will merge to main a week later~~. I created a new branch to keep the version 0.15.3, the branch name is `release/v0.15.3`, checkout to this branch if you need.
 
 
 <p align="center">
