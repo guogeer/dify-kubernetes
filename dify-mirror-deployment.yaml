@@ -855,6 +855,17 @@ spec:
           value: 'true'
         - name: 'MARKETPLACE_API_URL'
           value: 'https://marketplace.dify.ai'
+        - name: 'PLUGIN_REMOTE_INSTALL_HOST'
+          value: 'dify-plugin-daemon'
+        - name: 'PLUGIN_REMOTE_INSTALL_PORT'
+          value: '5003'
+        - name: 'FORCE_VERIFYING_SIGNATURE'
+          value: 'true'
+        - name: 'PLUGIN_PYTHON_ENV_INIT_TIMEOUT'
+          value: '120'
+        - name: 'PLUGIN_MAX_EXECUTION_TIMEOUT'
+          value: '600'
+        - name: 'PIP_MIRROR_URL'
         resources:
           requests:
             cpu: 200m
@@ -1029,6 +1040,17 @@ spec:
           value: 'true'
         - name: 'MARKETPLACE_API_URL'
           value: 'https://marketplace.dify.ai'
+        - name: 'PLUGIN_REMOTE_INSTALL_HOST'
+          value: 'dify-plugin-daemon'
+        - name: 'PLUGIN_REMOTE_INSTALL_PORT'
+          value: '5003'
+        - name: 'FORCE_VERIFYING_SIGNATURE'
+          value: 'true'
+        - name: 'PLUGIN_PYTHON_ENV_INIT_TIMEOUT'
+          value: '120'
+        - name: 'PLUGIN_MAX_EXECUTION_TIMEOUT'
+          value: '600'
+        - name: 'PIP_MIRROR_URL'
         resources:
           requests:
             cpu: 200m
@@ -1111,6 +1133,14 @@ spec:
           value: ''
         - name: 'PM2_INSTANCES'
           value: '2'
+        - name: 'LOOP_NODE_MAX_COUNT'
+          value: '100'
+        - name: 'MAX_TOOLS_NUM'
+          value: '10'
+        - name: 'MAX_PARALLEL_LIMIT'
+          value: '10'
+        - name: 'MAX_ITERATIONS_NUM'
+          value: '5'
         resources:
           requests:
             cpu: 100m
@@ -1461,6 +1491,11 @@ spec:
             value: 'localhost'
           - name: 'EXPOSE_PLUGIN_DEBUGGING_PORT'
             value: '5003'
+          - name: 'PYTHON_ENV_INIT_TIMEOUT'
+            value: '120'
+          - name: 'PLUGIN_MAX_EXECUTION_TIMEOUT'
+            value: '600'
+          - name: 'PIP_MIRROR_URL'
           # - name: 'ENDPOINT_URL_TEMPLATE'
           #   value: 'http://localhost/e/{hook_id}'
         volumeMounts:
