@@ -711,7 +711,7 @@ spec:
           type: DirectoryOrCreate
       containers:
       - name: dify-api
-        image: dockerhub.icu/langgenius/dify-api:1.1.3
+        image: dockerhub.icu/langgenius/dify-api:1.2.0
         env:
         - name: MODE
           value: api
@@ -926,7 +926,7 @@ spec:
           type: DirectoryOrCreate
       containers:
       - name: dify-worker
-        image: dockerhub.icu/langgenius/dify-api:1.1.3
+        image: dockerhub.icu/langgenius/dify-api:1.2.0
         ports:
         - containerPort: 5001
           protocol: TCP
@@ -1106,7 +1106,7 @@ spec:
       automountServiceAccountToken: false
       containers:
       - name: dify-web
-        image: dockerhub.icu/langgenius/dify-web:1.1.3
+        image: dockerhub.icu/langgenius/dify-web:1.2.0
         env:
         - name: EDITION
           value: SELF_HOSTED
@@ -1141,6 +1141,12 @@ spec:
           value: '10'
         - name: 'MAX_ITERATIONS_NUM'
           value: '5'
+        - name: 'ENABLE_WEBSITE_JINAREADER'
+          value: 'true'
+        - name: 'ENABLE_WEBSITE_FIRECRAWL'
+          value: 'true'
+        - name: 'ENABLE_WEBSITE_WATERCRAWL'
+          value: 'true'
         resources:
           requests:
             cpu: 100m
