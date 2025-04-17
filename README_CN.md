@@ -13,6 +13,7 @@
 ## 开发计划
 
 > 如果你需要 PVC 作为存储，请切换到 `feature/pvc-volume` 分支
+> 如果你想配置 S3 作为 dify 的存储，请参考文件夹 `[dify/api](https://github.com/Winson-030/dify-kubernetes/pull/36)`
 
 ### 增加 ssrf 代理组件
 

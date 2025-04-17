@@ -13,6 +13,7 @@
 ## 開発計画
 
 > hostPath の代わりに PVC をストレージとして使用する必要がある場合は、`feature/pvc-volume` ブランチをチェックアウトしてください
+> S3をストレージバックエンドとして構成するには、フォルダ `[dify/api](https://github.com/Winson-030/dify-kubernetes/pull/36)`を参照してください。
 
 ### ssrf プロキシコンポーネントの追加
 
