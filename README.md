@@ -25,7 +25,7 @@ This yaml file tested great in my local environment, but I think this need more 
 ## Development Plan
 
 > If you need PVC as storage instead of hostPath, please checkout branch `feature/pvc-volume`
-> To config S3 as storage backend, please refer to folder `[dify/api](https://github.com/Winson-030/dify-kubernetes/pull/36)`
+> To config S3 as storage backend, please refer to folder [dify/api](https://github.com/Winson-030/dify-kubernetes/pull/36)
 
 ### Add ssrf proxy component
 
