@@ -8,7 +8,7 @@
 
 > このリポジトリが役に立った場合は、スター 🌟 を付けてください ~~
 
-# これはバージョンv1.2.0です
+# これはバージョンv1.3.0です
 
 ## 開発計画
 
@@ -44,7 +44,7 @@ kubectl apply -f dify-deployment.yaml
 ```shell
 kubectl apply -f https://raw.githubusercontent.com/Winson-030/dify-kubernetes/main/dify-deployment.yaml
 ```
-## version 1.2.0
+## version 1.3.0
 ```
 kubectl apply -f https://raw.githubusercontent.com/Winson-030/dify-kubernetes/refs/heads/upgrade/dify-version-100/dify-deployment.yaml
 ```
@@ -54,7 +54,7 @@ kubectl apply -f https://raw.githubusercontent.com/Winson-030/dify-kubernetes/re
 ```shell
 kubectl apply -f https://cdn.jsdelivr.net/gh/Winson-030/dify-kubernetes@main/dify-mirror-deployment.yaml
 ```
-## version 1.2.0
+## version 1.3.0
 ```
 kubectl apply -f https://cdn.jsdelivr.net/gh/Winson-030/dify-kubernetes@upgrade/dify-version-100/dify-mirror-deployment.yaml
 ```

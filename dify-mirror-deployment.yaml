@@ -1329,7 +1329,7 @@ spec:
           type: DirectoryOrCreate
       containers:
       - name: dify-api
-        image: dockerhub.icu/langgenius/dify-api:1.2.0
+        image: dockerhub.icu/langgenius/dify-api:1.3.0
         envFrom:
         - configMapRef:
             name: dify-shared-config
@@ -1441,7 +1441,7 @@ spec:
           type: DirectoryOrCreate
       containers:
       - name: dify-worker
-        image: dockerhub.icu/langgenius/dify-api:1.2.0
+        image: dockerhub.icu/langgenius/dify-api:1.3.0
         ports:
         - containerPort: 5001
           protocol: TCP
@@ -1545,7 +1545,7 @@ spec:
       automountServiceAccountToken: false
       containers:
       - name: dify-web
-        image: dockerhub.icu/langgenius/dify-web:1.2.0
+        image: dockerhub.icu/langgenius/dify-web:1.3.0
         env:
         - name: EDITION
           value: SELF_HOSTED
@@ -1923,7 +1923,7 @@ spec:
           type: DirectoryOrCreate
       containers:
       - name: dify-plugin-daemon
-        image: dhub.kubesre.xyz/langgenius/dify-plugin-daemon:0.0.6-local
+        image: dhub.kubesre.xyz/langgenius/dify-plugin-daemon:0.0.9-local
         resources:
           limits:
             memory: "1024Mi"
