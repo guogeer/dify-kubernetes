@@ -8,6 +8,8 @@
 
 > このリポジトリが役に立った場合は、スター 🌟 を付けてください ~~
 
+まず、このDeepWiki（Devin AIによる）を読んでから始めてください：[DeepWiki](https://deepwiki.com/Winson-030/dify-kubernetes)
+
 # これはバージョンv1.3.0です
 
 ## 開発計画

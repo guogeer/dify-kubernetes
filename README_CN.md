@@ -8,6 +8,8 @@
 
 > 这个项目帮到你的话，点个星星 🌟 ~~
 
+开始前先看这份 Devin AI 的 DeepWiki: [DeepWiki](https://deepwiki.com/Winson-030/dify-kubernetes)
+
 # 这是 1.3.0 版本
 
 ## 开发计划

@@ -8,6 +8,8 @@ Deploy [Dify](https://dify.ai/) on Kubernetes
 
 > Star 🌟 if this repo helps you ~~
 
+Try read this DeepWiki (Powered by Devin AI) first before start: [DeepWiki](https://deepwiki.com/Winson-030/dify-kubernetes)
+
 # This is version v1.3.0
 
 **This branch will merge to main when dify 1.0 tested stable, now it's not.**
