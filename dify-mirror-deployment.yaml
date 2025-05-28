@@ -993,7 +993,7 @@ spec:
         kubernetes.io/os: linux
       containers:
       - name: dify-sandbox
-        image: dockerhub.icu/langgenius/dify-sandbox:0.2.11
+        image: dockerhub.icu/langgenius/dify-sandbox:0.2.12
         env:
         - name: API_KEY
           # value: "dify-sandbox"
@@ -1329,7 +1329,7 @@ spec:
           type: DirectoryOrCreate
       containers:
       - name: dify-api
-        image: dockerhub.icu/langgenius/dify-api:1.3.0
+        image: dockerhub.icu/langgenius/dify-api:1.4.1
         envFrom:
         - configMapRef:
             name: dify-shared-config
@@ -1455,9 +1455,12 @@ spec:
           value: worker
 
         - name: CELERY_BROKER_URL
-          value: >-
-              redis://:difyai123456@dify-redis:6379/1
- 
+          # value: >-
+          #     redis://:difyai123456@dify-redis:6379/1
+          valueFrom:
+            configMapKeyRef:
+              name: dify-shared-config
+              key: CELERY_BROKER_URL 
         - name: SENTRY_DSN
           # value: ''
           valueFrom:
@@ -1545,7 +1548,7 @@ spec:
       automountServiceAccountToken: false
       containers:
       - name: dify-web
-        image: dockerhub.icu/langgenius/dify-web:1.3.0
+        image: dockerhub.icu/langgenius/dify-web:1.4.1
         env:
         - name: EDITION
           value: SELF_HOSTED
@@ -1923,7 +1926,7 @@ spec:
           type: DirectoryOrCreate
       containers:
       - name: dify-plugin-daemon
-        image: dhub.kubesre.xyz/langgenius/dify-plugin-daemon:0.0.9-local
+        image: dhub.kubesre.xyz/langgenius/dify-plugin-daemon:0.1.1-local
         resources:
           limits:
             memory: "1024Mi"
@@ -1945,8 +1948,12 @@ spec:
         env:
 
         - name: CELERY_BROKER_URL
-          value: >-
-            redis://:difyai123456@dify-redis:6379/1
+          # value: >-
+          #   redis://:difyai123456@dify-redis:6379/1
+          valueFrom:
+            configMapKeyRef:
+              name: dify-shared-config
+              key: CELERY_BROKER_URL
         - name: 'DB_DATABASE'
           # value: 'dify_plugin'
           valueFrom:
