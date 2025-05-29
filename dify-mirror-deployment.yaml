@@ -35,7 +35,7 @@ data:
   DEPLOY_ENV: PRODUCTION
   CHECK_UPDATE_URL: https://updates.dify.ai
   OPENAI_API_BASE: https://api.openai.com/v1
-  MIGRATION_ENABLED: 'true'
+  MIGRATION_ENABLED: 'false'
   FILES_ACCESS_TIMEOUT: '300'
   ACCESS_TOKEN_EXPIRE_MINUTES: '60'
   REFRESH_TOKEN_EXPIRE_DAYS: '30'
@@ -745,7 +745,7 @@ spec:
             configMapKeyRef:
               name: dify-shared-config
               key: REDIS_PASSWORD
-  
+
         livenessProbe:
           exec:
             command:
@@ -1460,7 +1460,7 @@ spec:
           valueFrom:
             configMapKeyRef:
               name: dify-shared-config
-              key: CELERY_BROKER_URL 
+              key: CELERY_BROKER_URL
         - name: SENTRY_DSN
           # value: ''
           valueFrom:
@@ -1493,7 +1493,7 @@ spec:
             configMapKeyRef:
               name: dify-shared-config
               key: PLUGIN_DIFY_INNER_API_KEY
-  
+
         resources:
           requests:
             cpu: 200m
@@ -1926,7 +1926,7 @@ spec:
           type: DirectoryOrCreate
       containers:
       - name: dify-plugin-daemon
-        image: dhub.kubesre.xyz/langgenius/dify-plugin-daemon:0.1.1-local
+        image: dhub.kubesre.xyz/langgenius/dify-plugin-daemon:0.1.0-local
         resources:
           limits:
             memory: "1024Mi"
