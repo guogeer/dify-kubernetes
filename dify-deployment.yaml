@@ -1329,7 +1329,7 @@ spec:
           type: DirectoryOrCreate
       containers:
       - name: dify-api
-        image: langgenius/dify-api:1.4.1
+        image: langgenius/dify-api:1.4.0
         envFrom:
         - configMapRef:
             name: dify-shared-config
@@ -1441,7 +1441,7 @@ spec:
           type: DirectoryOrCreate
       containers:
       - name: dify-worker
-        image: langgenius/dify-api:1.4.1
+        image: langgenius/dify-api:1.4.0
         ports:
         - containerPort: 5001
           protocol: TCP
@@ -1548,7 +1548,7 @@ spec:
       automountServiceAccountToken: false
       containers:
       - name: dify-web
-        image: langgenius/dify-web:1.4.1
+        image: langgenius/dify-web:1.4.0
         env:
         - name: EDITION
           value: SELF_HOSTED
@@ -1927,7 +1927,7 @@ spec:
       initContainers:
       - name: wait-for-postgres
         image: postgres:15-alpine
-        command: ['sh', '-c', 'until pg_isready -h dify-postgres -U postgres -d dify; do echo waiting for postgres; sleep 2; done;'] 
+        command: [ 'sh', '-c', 'until pg_isready -h dify-postgres -U postgres -d dify; do echo waiting for postgres; sleep 2; done;' ]
       containers:
       - name: dify-plugin-daemon
         image: langgenius/dify-plugin-daemon:0.1.0-local
