@@ -1924,6 +1924,10 @@ spec:
         hostPath:
           path: /root/dify/app/plugin/storage
           type: DirectoryOrCreate
+      initContainers:
+      - name: wait-for-postgres
+        image: postgres:15-alpine
+        command: ['sh', '-c', 'until pg_isready -h dify-postgres -U postgres -d mydb; do echo waiting for postgres; sleep 2; done;']     
       containers:
       - name: dify-plugin-daemon
         image: dhub.kubesre.xyz/langgenius/dify-plugin-daemon:0.1.0-local
