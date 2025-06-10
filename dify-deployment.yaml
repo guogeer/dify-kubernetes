@@ -1145,7 +1145,7 @@ data:
     # Notice:
     # default is 'sandbox' in dify's github repo, here is 'dify-sandbox' because the service name of sandbox is 'dify-sandbox'
     # you can change it to your own service name
-    cache_peer dify-sandbox parent 8194 0 no-query originserver
+    cache_peer dify-sandbox.dify.svc.cluster.local parent 8194 0 no-query originserver
     acl src_all src all
     http_access allow src_all
 ---
